@@ -1,5 +1,5 @@
-#ifndef QCOMMAND_h
-#define QCOMMAND_h
+#ifndef SCOMMAND_h
+#define SCOMMAND_h
 
 #include <Arduino.h>
 #include <string.h>
@@ -13,11 +13,11 @@
 // Uncomment the next line to run the library in debug mode (verbose messages)
 // #define SERIALCOMMAND_DEBUG
 
-class qCommand {
+class sCommand {
   public:
 
-    qCommand(bool caseSensitive = false);
-    void addCommand(const char *command, void(*function)(qCommand& streamCommandParser, Stream& stream));  // Add a command to the processing dictionary.
+    sCommand(bool caseSensitive = false);
+    void addCommand(const char *command, void(*function)(sCommand& streamCommandParser, Stream& stream));  // Add a command to the processing dictionary.
     void assignVariable(const char* command, bool* variable);
     void assignVariable(const char* command, int8_t* variable);
     void assignVariable(const char* command, int16_t* variable);
@@ -29,7 +29,7 @@ class qCommand {
     void assignVariable(const char* command, unsigned long* variable);
     void assignVariable(const char* command, double* variable);
     void assignVariable(const char* command, float* variable);
-    void setDefaultHandler(void (*function)(const char *, qCommand& streamCommandParser, Stream& stream));   // A handler to call when no valid command received.
+    void setDefaultHandler(void (*function)(const char *, sCommand& streamCommandParser, Stream& stream));   // A handler to call when no valid command received.
     //void setCaseSensitive(bool InSensitive);
     bool str2Bool(const char* string);
     void readSerial(Stream& inputStream);             // Main entry point.
@@ -40,19 +40,19 @@ class qCommand {
 
   private:
       template <typename DataType>
-      void addCommandInternal(const char *command, void (qCommand::*function)(qCommand& streamCommandParser, Stream& stream, DataType* variable, const char* command), DataType* var);
-      void reportBool(qCommand& qC, Stream& S, bool* ptr, const char* command) ;
+      void addCommandInternal(const char *command, void (sCommand::*function)(sCommand& streamCommandParser, Stream& stream, DataType* variable, const char* command), DataType* var);
+      void reportBool(sCommand& sC, Stream& S, bool* ptr, const char* command) ;
       template <class argInt>
-      void reportInt(qCommand& qC, Stream& S, argInt* ptr, const char* command);
+      void reportInt(sCommand& sC, Stream& S, argInt* ptr, const char* command);
       template <class argUInt>
-      void reportUInt(qCommand& qC, Stream& S, argUInt* ptr, const char* command);
+      void reportUInt(sCommand& sC, Stream& S, argUInt* ptr, const char* command);
       template <class argFloating>
-      void reportFloat(qCommand& qC, Stream& S, argFloating* ptr, const char* command);
-      void invalidAddress(qCommand& qC, Stream& S, void* ptr, const char* command);
+      void reportFloat(sCommand& sC, Stream& S, argFloating* ptr, const char* command);
+      void invalidAddress(sCommand& sC, Stream& S, void* ptr, const char* command);
 
     union callBack {
-        void (*f1)(qCommand& streamCommandParser, Stream& stream);
-	    void (qCommand::*f2)(qCommand& streamCommandParser, Stream& stream, void* ptr, const char* command);
+        void (*f1)(sCommand& streamCommandParser, Stream& stream);
+	    void (sCommand::*f2)(sCommand& streamCommandParser, Stream& stream, void* ptr, const char* command);
     } callBack;
 
 
@@ -64,7 +64,7 @@ class qCommand {
     StreamCommandParserCallback *commandList;   // Actual definition for command/handler array
     byte commandCount;
     // Pointer to the default handler function
-    void (*defaultHandler)(const char *, qCommand& streamCommandParser, Stream& stream);
+    void (*defaultHandler)(const char *, sCommand& streamCommandParser, Stream& stream);
 
     char delim[2]; // null-terminated list of character to be used as delimeters for tokenizing (default " ")
     char term;     // Character that signals end of command (default '\n')
@@ -77,4 +77,4 @@ class qCommand {
 
 };
 
-#endif //QCOMMAND_h
+#endif //SCOMMAND_h

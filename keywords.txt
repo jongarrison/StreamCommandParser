@@ -2,7 +2,7 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-qCommand	KEYWORD1
+sCommand	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

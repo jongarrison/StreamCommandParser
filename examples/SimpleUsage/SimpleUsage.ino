@@ -1,36 +1,36 @@
-#include "qCommand.h"
-qCommand qC;
-//qCommand qC = qCommand(true); //Use this line instead for case-sensitive commands
+#include "sCommand.h"
+sCommand sC;
+//sCommand sC = sCommand(true); //Use this line instead for case-sensitive commands
 
 double loopGain = 1.021;
 int anInteger;
 
 void setup() {
-  qC.setDefaultHandler(UnknownCommand);
-  qC.addCommand("Hello", hello);
-  qC.addCommand("Hi", hello);
-  qC.addCommand("Gain",gain);
-  qC.assignVariable("Int",&anInteger);
-  qC.addCommand("Mult",multiply);
-  qC.addCommand("Help", help);
+  sC.setDefaultHandler(UnknownCommand);
+  sC.addCommand("Hello", hello);
+  sC.addCommand("Hi", hello);
+  sC.addCommand("Gain",gain);
+  sC.assignVariable("Int",&anInteger);
+  sC.addCommand("Mult",multiply);
+  sC.addCommand("Help", help);
 }
 
 void loop() {
-  qC.readSerial(Serial);
-  qC.readSerial(Serial2);
+  sC.readSerial(Serial);
+  sC.readSerial(Serial2);
 }
 
-void hello(qCommand& qC, Stream& S) {
-  if ( qC.next() == NULL) {
+void hello(sCommand& sC, Stream& S) {
+  if ( sC.next() == NULL) {
     S.println("Hello.");
   } else {
-    S.printf("Hello %s, it is nice to meet you.\n",qC.current());
+    S.printf("Hello %s, it is nice to meet you.\n",sC.current());
   }
 }
 
-void gain(qCommand& qC, Stream& S) {
-  if ( qC.next() != NULL) {
-    loopGain = atof(qC.current());
+void gain(sCommand& sC, Stream& S) {
+  if ( sC.next() != NULL) {
+    loopGain = atof(sC.current());
     if (loopGain < 0) {
       loopGain = 0;
     } else if (loopGain > 10) {
@@ -40,30 +40,30 @@ void gain(qCommand& qC, Stream& S) {
  S.printf("The gain is %f\n",loopGain);
 }
 
-void multiply(qCommand& qC, Stream& S) {
+void multiply(sCommand& sC, Stream& S) {
   double a;
   int b;
-  if ( qC.next() == NULL) {
+  if ( sC.next() == NULL) {
     S.println("The multiply command needs two arguments, none given.");
     return;
   } else {
-    a = atof(qC.current());
+    a = atof(sC.current());
   }
-  if ( qC.next() == NULL) {
+  if ( sC.next() == NULL) {
     S.println("The multiply command needs two arguments, only one given.");
     return;
   } else {
-    b = atoi(qC.current());
+    b = atoi(sC.current());
   }
   S.printf("%e times %d is %e\n",a,b,a*b);
 }
 
-void help(qCommand& qC, Stream& S) {
+void help(sCommand& sC, Stream& S) {
   S.println("Available commands are:");
-  qC.printAvailableCommands(S);
+  sC.printAvailableCommands(S);
 }
 
-void UnknownCommand(const char* command, qCommand& qC, Stream& S) {
+void UnknownCommand(const char* command, sCommand& sC, Stream& S) {
   S.printf("I'm sorry, I didn't understand that. (You said '%s'?)\n",command);
   S.println("You can type 'help' for a list of commands");
 }

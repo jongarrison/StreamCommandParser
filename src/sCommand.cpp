@@ -1,10 +1,10 @@
-#include "qCommand.h"
+#include "sCommand.h"
 #include <limits>
 
 /**
  * Constructor
  */
-qCommand::qCommand(bool caseSensitive)
+sCommand::sCommand(bool caseSensitive)
   :
 
 	commandList(NULL),
@@ -24,7 +24,7 @@ qCommand::qCommand(bool caseSensitive)
  * This is used for matching a found token in the buffer, and gives the pointer
  * to the handler function to deal with it.
  */
-void qCommand::addCommand(const char *command, void (*function)(qCommand& streamCommandParser, Stream& stream)) {
+void sCommand::addCommand(const char *command, void (*function)(sCommand& streamCommandParser, Stream& stream)) {
   #ifdef SERIALCOMMAND_DEBUG
     Serial.print(" - Adding Command (");
     Serial.print(commandCount);
@@ -44,7 +44,7 @@ void qCommand::addCommand(const char *command, void (*function)(qCommand& stream
   commandCount++;
 }
 template <typename DataType>
-void qCommand::addCommandInternal(const char *command, void (qCommand::*function)(qCommand& streamCommandParser, Stream& stream, DataType* variable, const char* command), DataType* var) {
+void sCommand::addCommandInternal(const char *command, void (sCommand::*function)(sCommand& streamCommandParser, Stream& stream, DataType* variable, const char* command), DataType* var) {
   #ifdef SERIALCOMMAND_DEBUG
     Serial.print(" - Adding Assign Variable Command (");
     Serial.print(commandCount);
@@ -56,10 +56,10 @@ void qCommand::addCommandInternal(const char *command, void (qCommand::*function
 
 	if ( var == NULL) {
 		//catch NULL pointer and trap with function that can handle it
-		commandList[commandCount].function.f2 =  &qCommand::invalidAddress;
+		commandList[commandCount].function.f2 =  &sCommand::invalidAddress;
 		commandList[commandCount].ptr = (void*) 1;
 	} else {
-		commandList[commandCount].function.f2 = (void(qCommand::*)(qCommand& streamCommandParser, Stream& stream, void* ptr, const char* command)) function;
+		commandList[commandCount].function.f2 = (void(sCommand::*)(sCommand& streamCommandParser, Stream& stream, void* ptr, const char* command)) function;
 		commandList[commandCount].ptr = (void*) var;
 	}
 
@@ -69,56 +69,56 @@ void qCommand::addCommandInternal(const char *command, void (qCommand::*function
 	commandCount++;
 }
 
-void qCommand::assignVariable(const char* command, bool* variable) {
-	addCommandInternal(command,&qCommand::reportBool, variable);
+void sCommand::assignVariable(const char* command, bool* variable) {
+	addCommandInternal(command,&sCommand::reportBool, variable);
 }
 
-void qCommand::assignVariable(const char* command, int8_t* variable) {
-	addCommandInternal(command,&qCommand::reportInt, variable);
+void sCommand::assignVariable(const char* command, int8_t* variable) {
+	addCommandInternal(command,&sCommand::reportInt, variable);
 }
 
-void qCommand::assignVariable(const char* command, int16_t* variable) {
-	addCommandInternal(command,&qCommand::reportInt, variable);
+void sCommand::assignVariable(const char* command, int16_t* variable) {
+	addCommandInternal(command,&sCommand::reportInt, variable);
 }
 
-void qCommand::assignVariable(const char* command, int* variable) {
-	addCommandInternal(command,&qCommand::reportInt, variable);
+void sCommand::assignVariable(const char* command, int* variable) {
+	addCommandInternal(command,&sCommand::reportInt, variable);
 }
 
-void qCommand::assignVariable(const char* command, long* variable) {
-	addCommandInternal(command,&qCommand::reportInt, variable);
+void sCommand::assignVariable(const char* command, long* variable) {
+	addCommandInternal(command,&sCommand::reportInt, variable);
 }
 
-void qCommand::assignVariable(const char* command, uint8_t* variable) {
-	addCommandInternal(command,&qCommand::reportUInt, variable);
+void sCommand::assignVariable(const char* command, uint8_t* variable) {
+	addCommandInternal(command,&sCommand::reportUInt, variable);
 }
 
-void qCommand::assignVariable(const char* command, uint16_t* variable) {
-	addCommandInternal(command,&qCommand::reportUInt, variable);
+void sCommand::assignVariable(const char* command, uint16_t* variable) {
+	addCommandInternal(command,&sCommand::reportUInt, variable);
 }
 
-void qCommand::assignVariable(const char* command, unsigned int* variable) {
-	addCommandInternal(command,&qCommand::reportUInt, variable);
+void sCommand::assignVariable(const char* command, unsigned int* variable) {
+	addCommandInternal(command,&sCommand::reportUInt, variable);
 }
 
-void qCommand::assignVariable(const char* command, unsigned long* variable){
-	addCommandInternal(command,&qCommand::reportUInt, variable);
+void sCommand::assignVariable(const char* command, unsigned long* variable){
+	addCommandInternal(command,&sCommand::reportUInt, variable);
 }
 
-void qCommand::assignVariable(const char* command, double* variable) {
-	addCommandInternal(command,&qCommand::reportFloat,variable);
+void sCommand::assignVariable(const char* command, double* variable) {
+	addCommandInternal(command,&sCommand::reportFloat,variable);
 }
 
 
-void qCommand::assignVariable(const char* command, float* variable) {
-	addCommandInternal(command,&qCommand::reportFloat,variable);
+void sCommand::assignVariable(const char* command, float* variable) {
+	addCommandInternal(command,&sCommand::reportFloat,variable);
 }
 
-void qCommand::invalidAddress(qCommand& qC, Stream& S, void* ptr, const char* command) {
+void sCommand::invalidAddress(sCommand& sC, Stream& S, void* ptr, const char* command) {
 	S.printf("Invalid memory address assigned to command %s\n",command);
 }
 
-bool qCommand::str2Bool(const char* string) {
+bool sCommand::str2Bool(const char* string) {
 	bool result = false;
 	const uint8_t stringLen = 10;
 	char tempString[stringLen+1];
@@ -137,18 +137,18 @@ bool qCommand::str2Bool(const char* string) {
 }
 
 
-void qCommand::reportBool(qCommand& qC, Stream& S, bool* ptr, const char* command) {
-	if ( qC.next() != NULL) {
-		*ptr = qC.str2Bool(command);
+void sCommand::reportBool(sCommand& sC, Stream& S, bool* ptr, const char* command) {
+	if ( sC.next() != NULL) {
+		*ptr = sC.str2Bool(command);
 	}
 
 	S.printf("%s is %s\n",command, *ptr ? "true":"false");
 }
 
 template <class argInt>
-void qCommand::reportInt(qCommand& qC, Stream& S, argInt* ptr, const char* command) {
-	if ( qC.next() != NULL) {
-		int value = atoi(qC.current());
+void sCommand::reportInt(sCommand& sC, Stream& S, argInt* ptr, const char* command) {
+	if ( sC.next() != NULL) {
+		int value = atoi(sC.current());
 		if ( value < std::numeric_limits<argInt>::min()) {
 			*ptr = std::numeric_limits<argInt>::min();
 		} else if ( value > std::numeric_limits<argInt>::max()) {
@@ -162,13 +162,13 @@ void qCommand::reportInt(qCommand& qC, Stream& S, argInt* ptr, const char* comma
 
 
 template <class argUInt>
-void qCommand::reportUInt(qCommand& qC, Stream& S, argUInt* ptr, const char* command) {
-	if ( qC.next() != NULL) {
-		int temp = atoi(qC.current());
+void sCommand::reportUInt(sCommand& sC, Stream& S, argUInt* ptr, const char* command) {
+	if ( sC.next() != NULL) {
+		int temp = atoi(sC.current());
 		if (temp < 0) {
 			*ptr = 0;
 		} else {
-			unsigned long value = strtoul(qC.current(),NULL,10);
+			unsigned long value = strtoul(sC.current(),NULL,10);
 			if ( value > std::numeric_limits<argUInt>::max()) {
 				*ptr = std::numeric_limits<argUInt>::max();
 			} else {
@@ -180,14 +180,14 @@ void qCommand::reportUInt(qCommand& qC, Stream& S, argUInt* ptr, const char* com
 }
 
 template <class argFloating>
-void qCommand::reportFloat(qCommand& qC, Stream& S, argFloating* ptr, const char* command) {
-	if ( qC.next() != NULL) {
-		argFloating newValue = atof(qC.current());
+void sCommand::reportFloat(sCommand& sC, Stream& S, argFloating* ptr, const char* command) {
+	if ( sC.next() != NULL) {
+		argFloating newValue = atof(sC.current());
 
 		if ( sizeof(argFloating) >  4 ) { //make setting variable atomic for doubles or anything greater than 32bits.
-			__disable_irq();
+			//__disable_irq(); //JG - This should be revisited in a platform independent way (conditionally using portENTER_CRITICAL() on some platforms)
 			*ptr = newValue;
-			__enable_irq();
+			//__enable_irq(); //JG - This should be revisited in a platform independent way (conditionally using portEXIT_CRITICAL() on some platforms)
 		} else {
 			*ptr = newValue;
 		}
@@ -204,7 +204,7 @@ void qCommand::reportFloat(qCommand& qC, Stream& S, argFloating* ptr, const char
  * This sets up a handler to be called in the event that the receveived command string
  * isn't in the list of commands.
  */
-void qCommand::setDefaultHandler(void (*function)(const char *, qCommand& streamCommandParser, Stream& stream)) {
+void sCommand::setDefaultHandler(void (*function)(const char *, sCommand& streamCommandParser, Stream& stream)) {
   defaultHandler = function;
 }
 
@@ -213,7 +213,7 @@ void qCommand::setDefaultHandler(void (*function)(const char *, qCommand& stream
  * When the terminator character (default '\n') is seen, it starts parsing the
  * buffer for a prefix command, and calls handlers setup by addCommand() member
  */
-void qCommand::readSerial(Stream& inputStream) {
+void sCommand::readSerial(Stream& inputStream) {
     while (inputStream.available() > 0) {
     char inChar = inputStream.read();   // Read single available character, there may be more waiting
     #ifdef SERIALCOMMAND_DEBUG
@@ -293,7 +293,7 @@ void qCommand::readSerial(Stream& inputStream) {
 /*
  * Print list of all available commands
  */
-void qCommand::printAvailableCommands(Stream& outputStream) {
+void sCommand::printAvailableCommands(Stream& outputStream) {
   for (int i = 0; i < commandCount; i++) {
     outputStream.println(commandList[i].command);
   }
@@ -302,7 +302,7 @@ void qCommand::printAvailableCommands(Stream& outputStream) {
 /*
  * Clear the input buffer.
  */
-void qCommand::clearBuffer() {
+void sCommand::clearBuffer() {
   buffer[0] = '\0';
   bufPos = 0;
 }
@@ -311,7 +311,7 @@ void qCommand::clearBuffer() {
  * Retrieve the next token ("word" or "argument") from the command buffer.
  * Returns NULL if no more tokens exist.
  */
-char *qCommand::next() {
+char *sCommand::next() {
   cur = strtok_r(NULL, delim, &last);
   return cur;
 }
@@ -320,6 +320,6 @@ char *qCommand::next() {
  * Retrieve the current token ("word" or "argument") from the command buffer.
  * Returns NULL if no more tokens exist.
  */
-char *qCommand::current() {
+char *sCommand::current() {
   return cur;
 }
